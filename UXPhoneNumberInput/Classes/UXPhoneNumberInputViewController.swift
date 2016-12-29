@@ -16,17 +16,27 @@ public class UXPhoneNumberInputViewController: UITableViewController {
     
     // MARK: - Public functions
     
+    var TRANS_PHONE                     = "Your Phone Number"
+    var TRANS_INVALID_COUNTRY           = "Invalid country code"
+    var TRANS_SELECT_LIST               = "Select From List"
+    var TRANS_MESSAGE_LABEL             = "Please fill in your phonenumber"
+    var TRANS_ERROR                     = "The phonenumber is incorrect"
+    var TRANS_COUNTRY_CODE_PLACEHOLDER  = "Country code"
+    var TRANS_PHONE_NUMBER_PLACEHOLDER  = "Your phone number"
+    var defaultValue                    = "+31681154691"
+    
     public func done(withAction action: @escaping (_ phoneNumber:String)->Void) {
         doneButtonAction = action
     }
     
     // MARK: - Private variables
-    @IBOutlet fileprivate weak var countryCodePlaceholder: UIView!
-    @IBOutlet fileprivate weak var countryCodeField: UITextField!
-    @IBOutlet fileprivate var phoneNumberPlaceholder: UIView!
-    @IBOutlet fileprivate weak var phoneNumberField: UITextField!
-    @IBOutlet fileprivate weak var countryNameLabel: UILabel!
-
+    @IBOutlet weak var countryCodePlaceholder: UILabel!
+    @IBOutlet weak var countryCodeField: UITextField!
+    @IBOutlet var phoneNumberPlaceholder: UILabel!
+    @IBOutlet weak var phoneNumberField: UITextField!
+    @IBOutlet weak var countryNameLabel: UILabel!
+    @IBOutlet weak var MessageLabel: UILabel!
+    
     fileprivate let phoneNumberKit = PhoneNumberKit()
     
     fileprivate var selectedRegionCode: String? {
@@ -55,7 +65,7 @@ public class UXPhoneNumberInputViewController: UITableViewController {
     fileprivate var countryNameLabelText: String {
         
         guard let text = countryCodeField.text,!text.isEmpty else {
-            return "Select From List"
+            return TRANS_SELECT_LIST
         }
         
         guard
@@ -63,7 +73,7 @@ public class UXPhoneNumberInputViewController: UITableViewController {
             let country = phoneNumberKit.mainCountry(forCode: code),
             let displayName = (Locale.current as NSLocale).displayName(forKey: .countryCode, value: country)
         else {
-            return "Invalid country code"
+            return TRANS_INVALID_COUNTRY
         }
         
         return displayName
@@ -110,13 +120,27 @@ public class UXPhoneNumberInputViewController: UITableViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        title = NSLocalizedString("Your Phone Number", comment: "")
+        title = NSLocalizedString(TRANS_PHONE, comment: "")
+        var code = phoneNumberKit.countryCode(for:PhoneNumberKit.defaultRegionCode()) ?? 1
+        var national : UInt64 = 0
+        //let phoneNumber = phoneNumberKit.format(defaultValue, toType: .countryCode)
+        do {
+            let phoneNumber = try phoneNumberKit.parse(defaultValue)
+            code = phoneNumber.countryCode
+            national = phoneNumber.nationalNumber
+        } catch {
+                
+        }
         
-        countryCodeField.text = "+\(phoneNumberKit.countryCode(for:PhoneNumberKit.defaultRegionCode())!)"
+        phoneNumberField.text = "\(national)"
+        countryCodeField.text = "+\(code)"
         countryNameLabel.text = countryNameLabelText
-        
+        MessageLabel.text = TRANS_MESSAGE_LABEL
         countryCodePlaceholder.isHidden = shouldHideCountryCodePlaceholder
         phoneNumberPlaceholder.isHidden = shouldHidePhoneNumberPlaceholder
+        countryCodePlaceholder.text = TRANS_COUNTRY_CODE_PLACEHOLDER
+        phoneNumberPlaceholder.text = TRANS_PHONE_NUMBER_PLACEHOLDER
+
         doneButtonItem.isEnabled = shouldEnableDoneButton
         
     }
@@ -163,7 +187,7 @@ extension UXPhoneNumberInputViewController {
             doneButtonAction?(phoneNumberKit.format(parsedPhoneNumber, toType: .e164))
         } catch let e as PhoneNumberError {
             
-            let alertController = UIAlertController(title: "Error", message: e.description, preferredStyle: .alert)
+            let alertController = UIAlertController(title: "Error", message: TRANS_ERROR, preferredStyle: .alert)
             alertController.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
                 
             }))
