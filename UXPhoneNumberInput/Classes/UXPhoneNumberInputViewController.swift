@@ -10,22 +10,22 @@ import UIKit
 import PhoneNumberKit
 import AJCountryPicker2
 
-public class UXPhoneNumberInputViewController: UITableViewController {
-
-    // MARK: - Public variables
+open class UXPhoneNumberInputViewController: UITableViewController {
     
-    // MARK: - Public functions
+    // MARK: - open variables
     
-    var TRANS_PHONE                     = "Your Phone Number"
-    var TRANS_INVALID_COUNTRY           = "Invalid country code"
-    var TRANS_SELECT_LIST               = "Select From List"
-    var TRANS_MESSAGE_LABEL             = "Please fill in your phonenumber"
-    var TRANS_ERROR                     = "The phonenumber is incorrect"
-    var TRANS_COUNTRY_CODE_PLACEHOLDER  = "Country code"
-    var TRANS_PHONE_NUMBER_PLACEHOLDER  = "Your phone number"
-    var defaultValue                    = "+31681154691"
+    // MARK: - open functions
     
-    public func done(withAction action: @escaping (_ phoneNumber:String)->Void) {
+    open var TRANS_PHONE                     = "Your Phone Number"
+    open var TRANS_INVALID_COUNTRY           = "Invalid country code"
+    open var TRANS_SELECT_LIST               = "Select From List"
+    open var TRANS_MESSAGE_LABEL             = "Please fill in your phonenumber"
+    open var TRANS_ERROR                     = "The phonenumber is incorrect"
+    open var TRANS_COUNTRY_CODE_PLACEHOLDER  = "Country code"
+    open var TRANS_PHONE_NUMBER_PLACEHOLDER  = "Your phone number"
+    open var defaultValue                    = "+3133904562"
+    
+    open func done(withAction action: @escaping (_ phoneNumber:String)->Void) {
         doneButtonAction = action
     }
     
@@ -72,8 +72,8 @@ public class UXPhoneNumberInputViewController: UITableViewController {
             let code = UInt64(text),
             let country = phoneNumberKit.mainCountry(forCode: code),
             let displayName = (Locale.current as NSLocale).displayName(forKey: .countryCode, value: country)
-        else {
-            return TRANS_INVALID_COUNTRY
+            else {
+                return TRANS_INVALID_COUNTRY
         }
         
         return displayName
@@ -87,8 +87,8 @@ public class UXPhoneNumberInputViewController: UITableViewController {
             let phoneNumberText = phoneNumberField.text,
             !phoneNumberText.isEmpty,
             let _ = doneButtonAction
-        else {
-            return false
+            else {
+                return false
         }
         
         return true
@@ -115,10 +115,10 @@ public class UXPhoneNumberInputViewController: UITableViewController {
     }
     
     // MARK: - ViewController
-
-    override public func viewDidLoad() {
+    
+    override open func viewDidLoad() {
         super.viewDidLoad()
-
+        
         // Do any additional setup after loading the view.
         title = NSLocalizedString(TRANS_PHONE, comment: "")
         var code = phoneNumberKit.countryCode(for:PhoneNumberKit.defaultRegionCode()) ?? 1
@@ -129,7 +129,7 @@ public class UXPhoneNumberInputViewController: UITableViewController {
             code = phoneNumber.countryCode
             national = phoneNumber.nationalNumber
         } catch {
-                
+            
         }
         
         phoneNumberField.text = "\(national)"
@@ -140,26 +140,26 @@ public class UXPhoneNumberInputViewController: UITableViewController {
         phoneNumberPlaceholder.isHidden = shouldHidePhoneNumberPlaceholder
         countryCodePlaceholder.text = TRANS_COUNTRY_CODE_PLACEHOLDER
         phoneNumberPlaceholder.text = TRANS_PHONE_NUMBER_PLACEHOLDER
-
+        
         doneButtonItem.isEnabled = shouldEnableDoneButton
         
     }
     
-    public override func viewWillAppear(_ animated: Bool) {
+    open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         phoneNumberField.becomeFirstResponder()
     }
-
-    override public func didReceiveMemoryWarning() {
+    
+    override open func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
-    public override func becomeFirstResponder() -> Bool {
+    open override func becomeFirstResponder() -> Bool {
         return phoneNumberField.becomeFirstResponder()
     }
     
-    public override func resignFirstResponder() -> Bool {
+    open override func resignFirstResponder() -> Bool {
         
         if countryCodeField.isFirstResponder {
             return countryCodeField.resignFirstResponder()
@@ -171,7 +171,7 @@ public class UXPhoneNumberInputViewController: UITableViewController {
         
     }
     
-
+    
 }
 
 // MARK: - private functions
@@ -207,7 +207,7 @@ extension UXPhoneNumberInputViewController {
 // MARK: UITableViewDelegate
 extension UXPhoneNumberInputViewController {
     
-    public override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    open override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         if indexPath.section == 0 && indexPath.row == 1 {
             
@@ -219,7 +219,7 @@ extension UXPhoneNumberInputViewController {
                     _ = self.navigationController?.popViewController(animated: true)
                 }
             }
-
+            
             //countryPicker.customCountriesCode = phoneNumberKit.allCountries()
             countryPicker.showCallingCodes = true
             
@@ -237,7 +237,7 @@ extension UXPhoneNumberInputViewController {
 
 extension UXPhoneNumberInputViewController : UITextFieldDelegate {
     
-    public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+    open func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         
         if textField == countryCodeField {
             
@@ -252,8 +252,8 @@ extension UXPhoneNumberInputViewController : UITextFieldDelegate {
         }
         return false
     }
-
-    public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+    
+    open func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         
         if textField == countryCodeField {
             
@@ -273,7 +273,7 @@ extension UXPhoneNumberInputViewController : UITextFieldDelegate {
                 textField.text = ""
                 
             } else {
-            
+                
                 if text == "" {
                     countryCode = "+" + countryCode
                 }
@@ -289,7 +289,7 @@ extension UXPhoneNumberInputViewController : UITextFieldDelegate {
             countryNameLabel.text = countryNameLabelText
             doneButtonItem.isEnabled = shouldEnableDoneButton
             return false
-                
+            
         } else if textField == phoneNumberField {
             
             guard let text = textField.text else {
@@ -326,7 +326,7 @@ extension UXPhoneNumberInputViewController : UITextFieldDelegate {
 
 extension UXPhoneNumberInputViewController {
     
-    public static func instantiate() -> UXPhoneNumberInputViewController {
+    open static func instantiate() -> UXPhoneNumberInputViewController {
         
         let bundle = Bundle(for:self)
         
