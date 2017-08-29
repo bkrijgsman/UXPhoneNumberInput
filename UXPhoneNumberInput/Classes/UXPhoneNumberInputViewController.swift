@@ -128,11 +128,11 @@ open class UXPhoneNumberInputViewController: UITableViewController {
             let phoneNumber = try phoneNumberKit.parse(defaultValue)
             code = phoneNumber.countryCode
             national = phoneNumber.nationalNumber
+            phoneNumberField.text = "\(national)"
         } catch {
             
         }
         
-        phoneNumberField.text = "\(national)"
         countryCodeField.text = "+\(code)"
         countryNameLabel.text = countryNameLabelText
         MessageLabel.text = TRANS_MESSAGE_LABEL
